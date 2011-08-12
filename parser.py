@@ -22,74 +22,63 @@ class TasksParser:
         if os.path.isfile(tasks_path):
             self.tasks_path = tasks_path
         else:
-            raise NoFileError('Given file {} does not exist'.format(
+            raise NoFileError('Given file \'{}\' does not exist'.format(
                 os.path.split(tasks_path)[1]))
         # update tasks with defined interval
         self.update()
 
     def add_task(self, text, date=None, interval=None):
-        """bla bla
-        arguments:
+        """arguments:
          date -- datetime.date object
          interval -- possible values: number of days, 'month' or 'year'
         """
-        tasks = []
-        try:
-            with open(self.tasks_path) as f:
-                tasks = json.load(f)
-        except ValueError:
-            pass
+        tasks = self.get_tasks()
         tasks.append({
             'text': text,
             'date': date.strftime(self.DATE_FORMAT) if date else date,
             'interval': interval
         })
-        with open(self.tasks_path, 'w') as f:
-            json.dump(tasks, f)
+        self.save_tasks(tasks)
 
     def remove_task(self, id):
-        tasks = []
-        with open(self.tasks_path) as f:
-            tasks = json.load(f)
+        tasks = self.get_tasks()
         del tasks[id]
-        with open(self.tasks_path, 'w') as f:
-            json.dump(tasks, f)
+        self.save_tasks(tasks)
 
     def update(self):
-        tasks = []
-        try:
-            with open(self.tasks_path) as f:
-                tasks = json.load(f)
-        except ValueError:
-            return
+        tasks = self.get_tasks()
         for i, task in enumerate(tasks):
             if task['date']:
                 date = datetime.datetime.strptime(task['date'],
                                                   self.DATE_FORMAT)
-                if (datetime.datetime.now() - date).days <= 0:
-                    continue
-                interval = task['interval']
-                if type(interval) == int:
-                    new_date = date + datetime.timedelta(days=int(interval))
-                elif interval == self.MONTH:
-                    if date.month == 12:
-                        new_date = date.replace(year=date.year + 1, month=1)
-                    else:
-                        new_date = date.replace(month=date.month + 1)
-                elif interval == self.YEAR:
-                    new_date = date.replace(year=date.year + 1)
-                tasks[i]['date'] = new_date.strftime(self.DATE_FORMAT)
+                while (datetime.datetime.now() - date).days > 0:
+                    interval = task['interval']
+                    if type(interval) == int:
+                        date += datetime.timedelta(days=int(interval))
+                    elif interval == self.MONTH:
+                        if date.month == 12:
+                            date = date.replace(year=date.year + 1, month=1)
+                        else:
+                            date = date.replace(month=date.month + 1)
+                    elif interval == self.YEAR:
+                        date = date.replace(year=date.year + 1)
+                    tasks[i]['date'] = date.strftime(self.DATE_FORMAT)
+        self.save_tasks(tasks)
+
+    def get_tasks(self):
+        try:
+            with open(self.tasks_path) as f:
+                return json.load(f)
+        except ValueError:
+            return []
+
+    def save_tasks(self, tasks):
         with open(self.tasks_path, 'w') as f:
             json.dump(tasks, f)
 
 
     def __str__(self):
-        tasks = []
-        try:
-            with open(self.tasks_path) as f:
-                tasks = json.load(f)
-        except ValueError:
-            pass
+        tasks = self.get_tasks()
         def print_task(task):
             if task['date']:
                 date_obj = datetime.datetime.strptime(task['date'],
