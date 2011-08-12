@@ -7,6 +7,7 @@ import os.path
 import json
 import datetime
 
+import cons
 
 class NoFileError(Exception):
     pass
@@ -14,10 +15,6 @@ class NoFileError(Exception):
 
 class TasksParser:
 
-    DATE_FORMAT = '%d.%m.%y'
-    MONTH = 'month'
-    YEAR = 'year'
-    
     def __init__(self, tasks_path):
         if os.path.isfile(tasks_path):
             self.tasks_path = tasks_path
@@ -35,7 +32,7 @@ class TasksParser:
         tasks = self.get_tasks()
         tasks.append({
             'text': text,
-            'date': date.strftime(self.DATE_FORMAT) if date else date,
+            'date': date.strftime(cons.DATE_FORMAT) if date else date,
             'interval': interval
         })
         self.save_tasks(tasks)
@@ -50,19 +47,19 @@ class TasksParser:
         for i, task in enumerate(tasks):
             if task['date']:
                 date = datetime.datetime.strptime(task['date'],
-                                                  self.DATE_FORMAT)
+                                                  cons.DATE_FORMAT)
                 while (datetime.datetime.now() - date).days > 0:
                     interval = task['interval']
                     if type(interval) == int:
                         date += datetime.timedelta(days=int(interval))
-                    elif interval == self.MONTH:
+                    elif interval == cons.MONTH:
                         if date.month == 12:
                             date = date.replace(year=date.year + 1, month=1)
                         else:
                             date = date.replace(month=date.month + 1)
-                    elif interval == self.YEAR:
+                    elif interval == cons.YEAR:
                         date = date.replace(year=date.year + 1)
-                    tasks[i]['date'] = date.strftime(self.DATE_FORMAT)
+                    tasks[i]['date'] = date.strftime(cons.DATE_FORMAT)
         self.save_tasks(tasks)
 
     def get_tasks(self):
@@ -82,8 +79,8 @@ class TasksParser:
         def print_task(task):
             if task['date']:
                 date_obj = datetime.datetime.strptime(task['date'],
-                                                      self.DATE_FORMAT)
-                date = date_obj.strftime(self.DATE_FORMAT)
+                                                      cons.DATE_FORMAT)
+                date = date_obj.strftime(cons.DATE_FORMAT)
                 return '{} [{}]'.format(task['text'], date)
             else:
                 return task['text']
