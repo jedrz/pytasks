@@ -45,7 +45,7 @@ class TasksParser:
     def update(self):
         tasks = self.get_tasks()
         for i, task in enumerate(tasks):
-            if task['date']:
+            if task['date'] and task['interval']:
                 date = datetime.datetime.strptime(task['date'],
                                                   cons.DATE_FORMAT)
                 while (datetime.datetime.now() - date).days > 0:
