@@ -36,6 +36,20 @@ class TasksList(parser.TasksParser):
         else:
             self.remove_task(id - 1)
 
+    def __str__(self):
+        tasks = self.get_tasks()
+        def print_task(task):
+            if task['date']:
+                date_obj = datetime.datetime.strptime(task['date'],
+                                                      cons.DATE_FORMAT)
+                date = date_obj.strftime(cons.DATE_FORMAT)
+                return '{} [{}]'.format(task['text'], date)
+            else:
+                return task['text']
+        output = '\n'.join('{}. {}'.format(n + 1, print_task(task)) \
+                for n, task in enumerate(tasks))
+        return output
+
 
 def main():
     ap = argparse.ArgumentParser(

@@ -74,21 +74,6 @@ class TasksParser:
             json.dump(tasks, f)
 
 
-    def __str__(self):
-        tasks = self.get_tasks()
-        def print_task(task):
-            if task['date']:
-                date_obj = datetime.datetime.strptime(task['date'],
-                                                      cons.DATE_FORMAT)
-                date = date_obj.strftime(cons.DATE_FORMAT)
-                return '{} [{}]'.format(task['text'], date)
-            else:
-                return task['text']
-        output = '\n'.join('{}. {}'.format(n + 1, print_task(task)) \
-                for n, task in enumerate(tasks))
-        return output
-
-
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('Usage {} <todo list>'.format(sys.argv[0]))
