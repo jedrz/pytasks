@@ -14,7 +14,7 @@ class InvalidIndexError(Exception):
     pass
 
 
-class TasksList(parser.TasksParser):
+class TaskList(parser.TasksParser):
 
     def is_valid_index(self, id):
         return 0 < id <= len(self.get_tasks())
@@ -68,7 +68,7 @@ def main():
     args = ap.parse_args()
 
     try:
-        tl = TasksList(args.path)
+        tl = TaskList(args.path)
     except parser.NoFileError as err:
         print(err)
         sys.exit(1)

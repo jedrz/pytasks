@@ -9,11 +9,12 @@ import datetime
 
 import cons
 
+
 class NoFileError(Exception):
     pass
 
 
-class TasksParser:
+class TaskParser:
 
     def __init__(self, tasks_path):
         if os.path.isfile(tasks_path):
@@ -72,11 +73,3 @@ class TasksParser:
     def save_tasks(self, tasks):
         with open(self.tasks_path, 'w') as f:
             json.dump(tasks, f)
-
-
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print('Usage {} <todo list>'.format(sys.argv[0]))
-        sys.exit(1)
-    parser = TasksParser(sys.argv[1])
-    print(parser)
