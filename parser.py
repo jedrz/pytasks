@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-import sys
 import os.path
 import json
 import datetime
@@ -34,7 +33,8 @@ class TaskParser:
         tasks.append({
             'text': text,
             'date': date.strftime(cons.DATE_FORMAT) if date else date,
-            'interval': interval
+            'interval': interval,
+            'done': False
         })
         self.save_tasks(tasks)
 
@@ -43,24 +43,35 @@ class TaskParser:
         del tasks[id]
         self.save_tasks(tasks)
 
+    def edit_task(self, id, text=None, date=None, interval=None, done=None):
+        tasks = self.get_tasks()
+        t = tasks[id]
+        t['text'] = text or t['text']
+        t['date'] = date or t['date']
+        t['interval'] = interval or t['interval']
+        t['done'] = done or t['done']
+        tasks[id] = t
+        self.save_tasks(tasks)
+
+
     def update(self):
         tasks = self.get_tasks()
         for i, task in enumerate(tasks):
-            if task['date'] and task['interval']:
-                date = datetime.datetime.strptime(task['date'],
-                                                  cons.DATE_FORMAT)
-                while (datetime.datetime.now() - date).days > 0:
-                    interval = task['interval']
-                    if type(interval) == int:
-                        date += datetime.timedelta(days=int(interval))
-                    elif interval == cons.MONTH:
-                        if date.month == 12:
-                            date = date.replace(year=date.year + 1, month=1)
-                        else:
-                            date = date.replace(month=date.month + 1)
-                    elif interval == cons.YEAR:
-                        date = date.replace(year=date.year + 1)
-                    tasks[i]['date'] = date.strftime(cons.DATE_FORMAT)
+            if not (task['date'] and task['interval']):
+                continue
+            date = datetime.datetime.strptime(task['date'], cons.DATE_FORMAT)
+            interval = task['interval']
+            while (datetime.datetime.now() - date).days > 0:
+                if type(interval) == int:
+                    date += datetime.timedelta(days=int(interval))
+                elif interval == cons.MONTH:
+                    if date.month == 12:
+                        date = date.replace(year=date.year + 1, month=1)
+                    else:
+                        date = date.replace(month=date.month + 1)
+                elif interval == cons.YEAR:
+                    date = date.replace(year=date.year + 1)
+                tasks[i]['date'] = date.strftime(cons.DATE_FORMAT)
         self.save_tasks(tasks)
 
     def get_tasks(self):
@@ -73,3 +84,15 @@ class TaskParser:
     def save_tasks(self, tasks):
         with open(self.tasks_path, 'w') as f:
             json.dump(tasks, f)
+
+
+if __name__ == '__main__':
+    # test (sys.argv[1] -- todo file)
+    import sys
+    parser = TaskParser(sys.argv[1])
+    parser.add_task('one')
+    parser.add_task('two two')
+    parser.add_task('three three three')
+    parser.edit_task(2, 'four x 4')
+    parser.remove_task(0)
+    print(parser.get_tasks())
