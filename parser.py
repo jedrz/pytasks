@@ -45,9 +45,10 @@ class TaskParser:
 
     def edit_task(self, id, text=None, date=None, interval=None, done=None):
         tasks = self.get_tasks()
-        t = tasks[id]
+        t = tasks[id] # shortcut
         t['text'] = text or t['text']
-        t['date'] = date or t['date']
+        if date:
+            t['date'] = date.strftime(cons.DATE_FORMAT)
         t['interval'] = interval or t['interval']
         t['done'] = done or t['done']
         tasks[id] = t
@@ -93,6 +94,7 @@ if __name__ == '__main__':
     parser.add_task('one')
     parser.add_task('two two')
     parser.add_task('three three three')
-    parser.edit_task(2, 'four x 4')
+    parser.edit_task(2, text='four x 4',date=datetime.date.today(),
+                     interval=cons.MONTH)
     parser.remove_task(0)
     print(parser.get_tasks())
