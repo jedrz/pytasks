@@ -54,9 +54,9 @@ class TaskParser:
         tasks[index] = t
         self.save_tasks(tasks)
 
-    def move_task(self, index, pos=0):
+    def swap_task(self, index_a, index_b):
         tasks = self.get_tasks()
-        tasks[index], tasks[pos] = tasks[pos], tasks[index]
+        tasks[index_a], tasks[index_b] = tasks[index_b], tasks[index_a]
         self.save_tasks(tasks)
 
     def update(self):
