@@ -32,7 +32,7 @@ class TaskParser:
         tasks = self.get_tasks()
         tasks.append({
             'text': text,
-            'date': date.strftime(cons.DATE_FORMAT) if date else date,
+            'date': date,
             'interval': interval,
             'done': done
         })
@@ -43,12 +43,12 @@ class TaskParser:
         del tasks[index]
         self.save_tasks(tasks)
 
-    def edit_task(self, index, text=None, date=None, interval=None, done=None):
+    def edit_task(self, index, text=None, date=None, interval=None,
+                  done=None):
         tasks = self.get_tasks()
         t = tasks[index] # shortcut
         t['text'] = text or t['text']
-        if date:
-            t['date'] = date.strftime(cons.DATE_FORMAT)
+        t['date'] = date or t['date']
         t['interval'] = interval or t['interval']
         t['done'] = done or t['done']
         tasks[index] = t
@@ -56,7 +56,7 @@ class TaskParser:
 
     def move_task(self, index, pos=0):
         tasks = self.get_tasks()
-        tasks[index], tasks[pos] = tasks[pos], tasks[id]
+        tasks[index], tasks[pos] = tasks[pos], tasks[index]
         self.save_tasks(tasks)
 
     def update(self):
@@ -64,9 +64,9 @@ class TaskParser:
         for i, task in enumerate(tasks):
             if not (task['date'] and task['interval']):
                 continue
-            date = datetime.datetime.strptime(task['date'], cons.DATE_FORMAT)
+            date = task['date']
             interval = task['interval']
-            while (datetime.datetime.now() - date).days > 0:
+            while (datetime.date.today() - date).days > 0:
                 if type(interval) == int:
                     date += datetime.timedelta(days=int(interval))
                 elif interval == cons.MONTH:
@@ -76,18 +76,29 @@ class TaskParser:
                         date = date.replace(month=date.month + 1)
                 elif interval == cons.YEAR:
                     date = date.replace(year=date.year + 1)
-                tasks[i]['date'] = date.strftime(cons.DATE_FORMAT)
+                tasks[i]['date'] = date
         self.save_tasks(tasks)
 
     def get_tasks(self):
         try:
             with open(self.tasks_path) as f:
-                return json.load(f)
+                tasks = json.load(f)
+                for i, task in enumerate(tasks):
+                    if not task['date']:
+                        continue
+                    date = datetime.datetime.strptime(task['date'],
+                            cons.DATE_FORMAT)
+                    date = datetime.date(date.year, date.month, date.day)
+                    tasks[i]['date'] = date
+                return tasks
         except ValueError:
             return []
 
     def save_tasks(self, tasks):
         with open(self.tasks_path, 'w') as f:
+            for i, task in enumerate(tasks):
+                if task['date']:
+                    tasks[i]['date'] = task['date'].strftime(cons.DATE_FORMAT)
             json.dump(tasks, f)
 
 
