@@ -50,7 +50,8 @@ class TaskParser:
         t['text'] = text or t['text']
         t['date'] = date or t['date']
         t['interval'] = interval or t['interval']
-        t['done'] = done or t['done']
+        if done in (True, False):
+            t['done'] = done
         tasks[index] = t
         self.save_tasks(tasks)
 
