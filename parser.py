@@ -24,7 +24,7 @@ class TaskParser:
         # update tasks with defined interval
         self.update()
 
-    def add_task(self, text, date=None, interval=None):
+    def add_task(self, text=None, date=None, interval=None):
         """arguments:
          date -- datetime.date object
          interval -- possible values: number of days, 'month' or 'year'
