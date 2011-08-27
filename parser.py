@@ -54,6 +54,10 @@ class TaskParser:
         tasks[id] = t
         self.save_tasks(tasks)
 
+    def move_task(self, id, pos=0):
+        tasks = self.get_tasks()
+        tasks[id], tasks[pos] = tasks[pos], tasks[id]
+        self.save_tasks(tasks)
 
     def update(self):
         tasks = self.get_tasks()
