@@ -38,25 +38,25 @@ class TaskParser:
         })
         self.save_tasks(tasks)
 
-    def remove_task(self, id):
+    def remove_task(self, index):
         tasks = self.get_tasks()
-        del tasks[id]
+        del tasks[index]
         self.save_tasks(tasks)
 
-    def edit_task(self, id, text=None, date=None, interval=None, done=None):
+    def edit_task(self, index, text=None, date=None, interval=None, done=None):
         tasks = self.get_tasks()
-        t = tasks[id] # shortcut
+        t = tasks[index] # shortcut
         t['text'] = text or t['text']
         if date:
             t['date'] = date.strftime(cons.DATE_FORMAT)
         t['interval'] = interval or t['interval']
         t['done'] = done or t['done']
-        tasks[id] = t
+        tasks[index] = t
         self.save_tasks(tasks)
 
-    def move_task(self, id, pos=0):
+    def move_task(self, index, pos=0):
         tasks = self.get_tasks()
-        tasks[id], tasks[pos] = tasks[pos], tasks[id]
+        tasks[index], tasks[pos] = tasks[pos], tasks[id]
         self.save_tasks(tasks)
 
     def update(self):
