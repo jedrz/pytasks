@@ -38,7 +38,7 @@ class TaskParser:
         })
         self.save_tasks(tasks)
 
-    def remove_task(self, index):
+    def delete_task(self, index):
         tasks = self.get_tasks()
         del tasks[index]
         self.save_tasks(tasks)
