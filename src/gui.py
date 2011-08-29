@@ -45,7 +45,7 @@ class DialogAdd:
         builder.add_from_file(cons.DIALOG_ADD_SCHEMA)
         builder.connect_signals(self)
         self.widgets = GtkBuilderProxy(builder)
-        self.task = {'done': False}
+        self.task = {'done': False, 'date': None}
 
     def run(self):
         result = self.widgets.dialog.run()
