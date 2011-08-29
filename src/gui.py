@@ -129,7 +129,7 @@ class TaskListGUI:
         self.widgets = GtkBuilderProxy(builder)
         self.widgets.window.show_all()
 
-        self.parser = parser.TaskParser(sys.argv[1]) #FIXME
+        self.parser = parser.TaskParser(cons.DATA_FILE)
 
         self.set_column_func()
         self.update_liststore()

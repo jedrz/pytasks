@@ -34,7 +34,7 @@ class TaskList(parser.TasksParser):
         if not self.is_valid_index(id):
             raise InvalidIndexError('\'{}\' is not a valid index'.format(id))
         else:
-            self.remove_task(id - 1)
+            self.delete_task(id - 1)
 
     def __str__(self):
         tasks = self.get_tasks()
@@ -54,9 +54,8 @@ class TaskList(parser.TasksParser):
 def main():
     ap = argparse.ArgumentParser(
             description='A todo list with interval option')
-    ap.add_argument('path', help='a path to the todo list')
     ap.add_argument('-l', '--list', action='store_true',
-                    help='list all tasks') # means do nothing
+                    help='list all tasks')
     ap.add_argument('--update', action='store_true', help='update all tasks')
     group = ap.add_mutually_exclusive_group()
     group.add_argument('-a', '--add', nargs='+', metavar='DESCRIPTION',
@@ -68,7 +67,7 @@ def main():
     args = ap.parse_args()
 
     try:
-        tl = TaskList(args.path)
+        tl = TaskList(cons.DATA_FILE)
     except parser.NoFileError as err:
         print(err)
         sys.exit(1)
