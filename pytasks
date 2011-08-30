@@ -1,0 +1,9 @@
+#!/bin/sh
+
+cd /usr/share/pytasks
+
+if [ "$1" = "--gui" ]; then
+    python gui.py
+else
+    python cli.py "$@"
+fi
