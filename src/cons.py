@@ -16,7 +16,8 @@ def create_conf():
         try:
             os.mkdir(DATA_DIR)
         except OSError:
-            print('{} cannot be created, dir exists'.format(DATA_DIR))
+            print('{} cannot be created, file or symlink exists'.format(
+                DATA_DIR))
     if not os.path.isfile(DATA_FILE):
         with open(DATA_FILE, 'w') as f:
             pass

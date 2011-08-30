@@ -68,6 +68,7 @@ class TaskParser:
             date = task['date']
             interval = task['interval']
             while (datetime.date.today() - date).days > 0:
+                #FIXME poprawic dla 31 dni miesiaca
                 if type(interval) == int:
                     date += datetime.timedelta(days=int(interval))
                 elif interval == cons.MONTH:
