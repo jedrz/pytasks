@@ -29,11 +29,12 @@ class DialogCalendar:
         self.date = date
 
     def run(self):
-        self.widgets.calendar.select_month(self.date.month, self.date.year)
+        # range of month in gtk calendar is 0..11
+        self.widgets.calendar.select_month(self.date.month - 1, self.date.year)
         self.widgets.calendar.select_day(self.date.day)
         result = self.widgets.dialog.run()
         year, month, date = self.widgets.calendar.get_date()
-        date_obj = datetime.date(year, month, date)
+        date_obj = datetime.date(year, month + 1, date)
         self.widgets.dialog.destroy()
         return result, date_obj
 
