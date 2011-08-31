@@ -68,14 +68,22 @@ class TaskParser:
             date = task['date']
             interval = task['interval']
             while (datetime.date.today() - date).days > 0:
-                #FIXME poprawic dla 31 dni miesiaca
                 if type(interval) == int:
                     date += datetime.timedelta(days=int(interval))
                 elif interval == cons.MONTH:
                     if date.month == 12:
                         date = date.replace(year=date.year + 1, month=1)
                     else:
-                        date = date.replace(month=date.month + 1)
+                        # fix for february and 30 days months
+                        day = date.day
+                        while True:
+                            try:
+                                date = date.replace(month=date.month + 1,
+                                                    day=day)
+                            except ValueError:
+                                day -= 1
+                            else:
+                                break
                 elif interval == cons.YEAR:
                     date = date.replace(year=date.year + 1)
                 tasks[i]['date'] = date
