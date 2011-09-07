@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+import sys
 import os
 import os.path
 
@@ -16,11 +17,17 @@ def create_conf():
         try:
             os.mkdir(DATA_DIR)
         except OSError:
-            print('{} cannot be created, file or symlink exists'.format(
+            print('\'{}\' cannot be created, file or symlink exists'.format(
                 DATA_DIR))
+            sys.exit(1)
     if not os.path.isfile(DATA_FILE):
-        with open(DATA_FILE, 'w') as f:
-            pass
+        try:
+            with open(DATA_FILE, 'w') as f:
+                pass
+        except IOError:
+            print('\'{}\' cannot be created, dir or symlink exists'.format(
+                DATA_FILE))
+            sys.exit(1)
 
 create_conf()
 
