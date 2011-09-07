@@ -147,7 +147,7 @@ class TaskListGUI:
         property depending on status of the task.
         """
         def make_strikethrough(column, cell, model, it, data):
-            if self.widgets.liststore.get_value(it, cons.COLUMN_DONE):
+            if model.get_value(it, cons.COLUMN_DONE):
                 cell.set_property('strikethrough', True)
             else:
                 cell.set_property('strikethrough', False)
