@@ -81,8 +81,8 @@ class TaskParser:
             date = task['date']
             interval = task['interval']
             while (datetime.date.today() - date).days > 0:
-                if type(interval) == int:
-                    date += datetime.timedelta(days=int(interval))
+                if isinstance(interval, cons.DAYS):
+                    date += datetime.timedelta(days=interval)
                 elif interval == cons.MONTH:
                     if date.month == 12:
                         date = date.replace(year=date.year + 1, month=1)
