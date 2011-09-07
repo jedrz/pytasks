@@ -12,6 +12,10 @@ import cons
 
 
 class GtkBuilderProxy:
+    """A simple proxy for Gtk.Builder.
+
+    Give possibility to get a object by accessing its as a object attribute.
+    """
 
     def __init__(self, builder):
         self._builder = builder
@@ -65,6 +69,9 @@ class DialogAdd:
         return result, self.task
 
     def on_combobox_interval_changed(self, combobox):
+        """Set sensitive attribute of spinbutton depending on combobox 
+        value.
+        """
         if combobox.get_active() == cons.COMBOBOX_INTERVAL_DAYS:
             self.widgets.spinbutton_days.set_sensitive(True)
         else:
@@ -136,6 +143,9 @@ class TaskListGUI:
         self.update_liststore()
 
     def set_column_func(self):
+        """Add a function to treeview columns controlling strikethrough
+        property depending on status of the task.
+        """
         def make_strikethrough(column, cell, model, it, data):
             if self.widgets.liststore.get_value(it, cons.COLUMN_DONE):
                 cell.set_property('strikethrough', True)
@@ -155,6 +165,7 @@ class TaskListGUI:
         )
 
     def update_liststore(self):
+        """Clear and add tasks to liststore object."""
         # count of tasks
         self._index = 0
         self.widgets.liststore.clear()
