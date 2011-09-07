@@ -28,6 +28,7 @@ class TaskListCLI(parser.TaskParser):
             self.delete_task(index - 1)
 
     def mark(self, index):
+        """Change the status of the task"""
         if not self.is_valid_index(index):
             raise InvalidIndexError('\'{}\' is not a valid index'.format(
                 index))
@@ -39,6 +40,16 @@ class TaskListCLI(parser.TaskParser):
         return self.list_tasks()
 
     def list_tasks(self, comp=True, incomp=True, status=True):
+        """Return a formatted string.
+
+        arguments:
+        comp -- show completed tasks
+        incomp -- show incompleted tasks
+        status -- show status of tasks
+
+        Default the method returns formatted string with all tasks
+        and showed status.
+        """
         def filter_task(done):
             if comp and incomp:
                 return True
