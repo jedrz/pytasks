@@ -24,6 +24,36 @@ class TaskParser:
         # update tasks with defined interval
         self.update()
 
+    def get_tasks(self):
+        """Return a list with tasks.
+
+        If file is empty return empty list.
+        """
+        try:
+            with open(self.tasks_path) as f:
+                tasks = json.load(f)
+                for i, task in enumerate(tasks):
+                    if not task['date']:
+                        continue
+                    date = datetime.datetime.strptime(task['date'],
+                            cons.DATE_FORMAT)
+                    date = datetime.date(date.year, date.month, date.day)
+                    tasks[i]['date'] = date
+                return tasks
+        except ValueError:
+            return []
+
+    def save_tasks(self, tasks):
+        """Save tasks in the file.
+
+        The file is being cleaned and written with tasks list.
+        """
+        with open(self.tasks_path, 'w') as f:
+            for i, task in enumerate(tasks):
+                if task['date']:
+                    tasks[i]['date'] = task['date'].strftime(cons.DATE_FORMAT)
+            json.dump(tasks, f)
+
     def add_task(self, text=None, date=None, interval=None, done=False):
         """Add a task and save in the todo file.
 
@@ -101,36 +131,6 @@ class TaskParser:
                     date = date.replace(year=date.year + 1)
                 tasks[i]['date'] = date
         self.save_tasks(tasks)
-
-    def get_tasks(self):
-        """Return a list with tasks.
-
-        If file is empty return empty list.
-        """
-        try:
-            with open(self.tasks_path) as f:
-                tasks = json.load(f)
-                for i, task in enumerate(tasks):
-                    if not task['date']:
-                        continue
-                    date = datetime.datetime.strptime(task['date'],
-                            cons.DATE_FORMAT)
-                    date = datetime.date(date.year, date.month, date.day)
-                    tasks[i]['date'] = date
-                return tasks
-        except ValueError:
-            return []
-
-    def save_tasks(self, tasks):
-        """Save tasks in the file.
-
-        The file is being cleaned and written with tasks list.
-        """
-        with open(self.tasks_path, 'w') as f:
-            for i, task in enumerate(tasks):
-                if task['date']:
-                    tasks[i]['date'] = task['date'].strftime(cons.DATE_FORMAT)
-            json.dump(tasks, f)
 
 
 if __name__ == '__main__':
