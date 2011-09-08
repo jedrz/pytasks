@@ -27,7 +27,7 @@ class TaskParser:
     def get_tasks(self):
         """Return a list with tasks.
 
-        If file is empty return empty list.
+        If file is empty return an empty list.
         """
         try:
             with open(self.tasks_path) as f:
@@ -46,7 +46,7 @@ class TaskParser:
     def save_tasks(self, tasks):
         """Save tasks in the file.
 
-        The file is being cleaned and written with tasks list.
+        The file is being cleaned and written with the tasks list.
         """
         with open(self.tasks_path, 'w') as f:
             for i, task in enumerate(tasks):
@@ -94,7 +94,7 @@ class TaskParser:
         self.save_tasks(tasks)
 
     def swap_task(self, index_a, index_b):
-        """Move a task from a index to another one."""
+        """Move a task from an index to another one."""
         tasks = self.get_tasks()
         tasks[index_a], tasks[index_b] = tasks[index_b], tasks[index_a]
         self.save_tasks(tasks)

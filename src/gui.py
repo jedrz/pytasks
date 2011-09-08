@@ -14,7 +14,7 @@ import cons
 class GtkBuilderProxy:
     """A simple proxy for Gtk.Builder.
 
-    Give possibility to get a object by accessing its as a object attribute.
+    Give possibility to get a object by accessing its as an attribute.
     """
 
     def __init__(self, builder):
@@ -105,9 +105,9 @@ class DialogEdit(DialogAdd):
     
     def __init__(self, task):
         super(DialogEdit, self).__init__()
-        self.set_widget_values(task)
+        self.set_values(task)
 
-    def set_widget_values(self, task):
+    def set_values(self, task):
         self.widgets.entry_text.set_text(task['text'])
         self.widgets.entry_date.set_text(task['date'].strftime(
             cons.DATE_FORMAT))
