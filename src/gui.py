@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 import sys
 import datetime
 
@@ -50,11 +49,11 @@ class DialogAdd:
         builder.add_from_file(cons.DIALOG_ADD_SCHEMA)
         builder.connect_signals(self)
         self.widgets = GtkBuilderProxy(builder)
-        self.task = {'done': False, 'date': None}
+        self.task = {'date': None, 'done': False}
 
     def run(self):
         result = self.widgets.dialog.run()
-        self.task['text'] = self.widgets.entry_text.get_text() or None
+        self.task['text'] = self.widgets.entry_text.get_text()
         active = self.widgets.combobox_interval.get_active()
         if active == cons.COMBOBOX_INTERVAL_MONTH:
             self.task['interval'] = cons.MONTH
@@ -83,9 +82,15 @@ class DialogAdd:
         if result_calendar == Gtk.ResponseType.OK:
             self.task['date'] = date
             self.widgets.entry_date.set_text(date.strftime(cons.DATE_FORMAT))
+            # combobox sensitive
+            self.widgets.combobox_interval.set_sensitive(True)
         elif result_calendar == cons.RESPONSE_CLEAR:
             self.task['date'] = None
             self.widgets.entry_date.set_text('')
+            # combobox not sensitive
+            self.widgets.combobox_interval.set_active(
+                    cons.COMBOBOX_INTERVAL_NONE)
+            self.widgets.combobox_interval.set_sensitive(False)
 
 
 class DialogDelete:
@@ -109,9 +114,13 @@ class DialogEdit(DialogAdd):
 
     def set_values(self, task):
         self.widgets.entry_text.set_text(task['text'])
-        self.widgets.entry_date.set_text(task['date'].strftime(
-            cons.DATE_FORMAT))
+        if task['date']:
+            self.widgets.entry_date.set_text(task['date'].strftime(
+                cons.DATE_FORMAT))
         interval = task['interval']
+        # combobox sensitive? (default not)
+        if interval:
+            self.widgets.combobox_interval.set_sensitive(True)
         if interval == cons.MONTH:
             self.widgets.combobox_interval.set_active(
                     cons.COMBOBOX_INTERVAL_MONTH)

@@ -164,6 +164,7 @@
                 <child>
                   <object class="GtkComboBox" id="combobox_interval">
                     <property name="visible">True</property>
+                    <property name="sensitive">False</property>
                     <property name="can_focus">False</property>
                     <property name="model">liststore</property>
                     <property name="active">0</property>
