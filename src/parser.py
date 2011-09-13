@@ -5,6 +5,7 @@
 import os.path
 import json
 import datetime
+import operator
 
 import cons
 
@@ -54,6 +55,41 @@ class TaskParser:
                     tasks[i]['date'] = task['date'].strftime(cons.DATE_FORMAT)
             json.dump(tasks, f)
 
+    def _check_type(self, obj, types, compare_func=isinstance):
+        if obj is None:
+            return True
+        for t in types:
+            if compare_func(obj, t):
+                return True
+        return False
+
+    def check_text(self, text):
+        result = self._check_type(text, cons.TEXT_TYPES)
+        if not result:
+            raise TypeError('invalid type of \'text\'')
+
+    def check_date(self, date):
+        result = self._check_type(date, cons.DATE_TYPES)
+        if not result:
+            raise TypeError('invalid type of \'date\'')
+
+    def check_interval(self, interval):
+        result_value = self._check_type(interval, cons.INTERVAL_VALUES,
+                                        operator.eq)
+        result_type = self._check_type(interval, cons.INTERVAL_TYPES)
+        if not (result_value or result_type):
+            raise TypeError('invalid type of \'interval\'')
+
+    def check_done(self, done):
+        result = self._check_type(done, cons.DONE_TYPES, operator.eq)
+        if not result:
+            raise TypeError('invalid type of \'done\'')
+
+    def check_task(self, **task):
+        prefix = 'check_'
+        for k, v in task.items():
+            getattr(self, '{}{}'.format(prefix, k))(v)
+
     def add_task(self, text=None, date=None, interval=None, done=False):
         """Add a task and save in the todo file.
 
@@ -63,6 +99,7 @@ class TaskParser:
         interval -- possible values: number of days, cons.MONTH or cons.YEAR
         done -- status of the task (default False)
         """
+        self.check_task(text=text, date=date, interval=interval, done=done)
         tasks = self.get_tasks()
         tasks.append({
             'text': text,
@@ -83,6 +120,7 @@ class TaskParser:
         """Edit a task pointed by the index.
         Similar to add_task method.
         """
+        self.check_task(text=text, date=date, interval=interval, done=done)
         tasks = self.get_tasks()
         t = tasks[index] # shortcut
         t['text'] = text or t['text']
