@@ -115,20 +115,26 @@ class TaskParser:
         del tasks[index]
         self.save_tasks(tasks)
 
-    def edit_task(self, index, text=None, date=None, interval=None,
-                  done=None):
+    def edit_task(self, index, **task):
         """Edit a task pointed by the index.
         Similar to add_task method.
         """
-        self.check_task(text=text, date=date, interval=interval, done=done)
+        self.check_task(
+                text=task.get('text'),
+                date=task.get('date'),
+                interval=task.get('interval'),
+                done=task.get('done')
+        )
         tasks = self.get_tasks()
-        t = tasks[index] # shortcut
-        t['text'] = text or t['text']
-        t['date'] = date or t['date']
-        t['interval'] = interval or t['interval']
-        if done in (True, False):
-            t['done'] = done
-        tasks[index] = t
+        # dirty solution
+        if task.get('text', -1) != -1:
+            tasks[index]['text'] = task['text']
+        if task.get('date', -1) != -1:
+            tasks[index]['date'] = task['date']
+        if task.get('interval', -1) != -1:
+            tasks[index]['interval'] = task['interval']
+        if task.get('done') in cons.DONE_TYPES:
+            tasks[index]['done'] = task['done']
         self.save_tasks(tasks)
 
     def swap_task(self, index_a, index_b):
