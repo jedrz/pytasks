@@ -77,17 +77,18 @@ class DialogAdd:
             self.widgets.spinbutton_days.set_sensitive(False)
 
     def on_entry_date_icon_press(self, entry, position, event):
-        dialog_calendar = DialogCalendar()
-        result_calendar, date = dialog_calendar.run()
-        if result_calendar == Gtk.ResponseType.OK:
-            self.task['date'] = date
-            self.widgets.entry_date.set_text(date.strftime(cons.DATE_FORMAT))
-            # combobox sensitive
-            self.widgets.combobox_interval.set_sensitive(True)
-        elif result_calendar == cons.RESPONSE_CLEAR:
+        if position == Gtk.EntryIconPosition.PRIMARY:
+            dialog_calendar = DialogCalendar()
+            result_calendar, date = dialog_calendar.run()
+            if result_calendar == Gtk.ResponseType.OK:
+                self.task['date'] = date
+                self.widgets.entry_date.set_text(date.strftime(cons.DATE_FORMAT))
+                # set combobox sensitive
+                self.widgets.combobox_interval.set_sensitive(True)
+        else:
             self.task['date'] = None
             self.widgets.entry_date.set_text('')
-            # combobox not sensitive
+            # set combobox not sensitive
             self.widgets.combobox_interval.set_active(
                     cons.COMBOBOX_INTERVAL_NONE)
             self.widgets.combobox_interval.set_sensitive(False)
