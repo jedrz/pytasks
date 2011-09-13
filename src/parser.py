@@ -180,5 +180,5 @@ if __name__ == '__main__':
     parser.add_task('three three three')
     parser.edit_task(2, text='four x 4',date=datetime.date.today(),
                      interval=cons.MONTH)
-    parser.remove_task(0)
+    parser.delete_task(0)
     print(parser.get_tasks())
