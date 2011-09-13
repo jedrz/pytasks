@@ -78,7 +78,9 @@ class DialogAdd:
 
     def on_entry_date_icon_press(self, entry, position, event):
         if position == Gtk.EntryIconPosition.PRIMARY:
-            dialog_calendar = DialogCalendar()
+            _date = self.task['date'] if self.task['date'] else \
+                    datetime.date.today()
+            dialog_calendar = DialogCalendar(_date)
             result_calendar, date = dialog_calendar.run()
             if result_calendar == Gtk.ResponseType.OK:
                 self.task['date'] = date
@@ -111,17 +113,17 @@ class DialogEdit(DialogAdd):
     
     def __init__(self, task):
         super(DialogEdit, self).__init__()
-        self.set_values(task)
+        self.task = task
+        self.set_values()
 
-    def set_values(self, task):
-        self.widgets.entry_text.set_text(task['text'])
-        if task['date']:
-            self.widgets.entry_date.set_text(task['date'].strftime(
+    def set_values(self):
+        self.widgets.entry_text.set_text(self.task['text'])
+        if self.task['date']:
+            self.widgets.entry_date.set_text(self.task['date'].strftime(
                 cons.DATE_FORMAT))
-        interval = task['interval']
-        # combobox sensitive? (default not)
-        if interval:
+            # set combobox sensitive
             self.widgets.combobox_interval.set_sensitive(True)
+        interval = self.task['interval']
         if interval == cons.MONTH:
             self.widgets.combobox_interval.set_active(
                     cons.COMBOBOX_INTERVAL_MONTH)
