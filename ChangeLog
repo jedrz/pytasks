@@ -1,6 +1,8 @@
 13/9/11
 	- check types of task's attributes
 	- combobox not sensitive when interval is not set
+	- fixed edit_task
+	- default date during edit_task is the previous one or today
 
 8/9/11
 	- working release with basic functions
