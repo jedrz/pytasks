@@ -49,6 +49,7 @@ class TaskListCLI(parser.TaskParser):
         incomp -- show incompleted tasks
         status -- show status of tasks
         number -- show numbered tasks
+        sort -- show sorted tasks by date
 
         Default the method returns formatted string with numbered all tasks
         and showed status.
