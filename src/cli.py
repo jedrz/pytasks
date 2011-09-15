@@ -29,7 +29,7 @@ class TaskListCLI(parser.TaskParser):
             self.delete_task(index - 1)
 
     def mark(self, index):
-        """Change the status of the task"""
+        """Change the status of the task."""
         if not self.is_valid_index(index):
             raise InvalidIndexError('\'{}\' is not a valid index'.format(
                 index))

@@ -14,6 +14,7 @@ DATA_DIR = os.path.join(os.getenv('XDG_DATA_HOME'), NAME.lower())
 DATA_FILE = os.path.join(DATA_DIR, DATA_FILENAME)
 
 def create_conf():
+    """Create an empty todo list file."""
     if not os.path.isdir(DATA_DIR):
         try:
             os.mkdir(DATA_DIR)

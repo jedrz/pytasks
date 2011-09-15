@@ -25,6 +25,7 @@ class GtkBuilderProxy:
 
 
 class DialogCalendar:
+    """Date chooser."""
 
     def __init__(self, date=datetime.date.today()):
         builder = Gtk.Builder()
@@ -33,8 +34,10 @@ class DialogCalendar:
         self.date = date
 
     def run(self):
+        """Get chosen date and return status and datetime.date object."""
         # range of month in gtk calendar is 0..11
-        self.widgets.calendar.select_month(self.date.month - 1, self.date.year)
+        self.widgets.calendar.select_month(self.date.month - 1,
+                                           self.date.year)
         self.widgets.calendar.select_day(self.date.day)
         result = self.widgets.dialog.run()
         year, month, date = self.widgets.calendar.get_date()
@@ -44,6 +47,7 @@ class DialogCalendar:
 
 
 class DialogAdd:
+    """A dialog which handle adding a task."""
 
     def __init__(self):
         builder = Gtk.Builder()
@@ -53,6 +57,7 @@ class DialogAdd:
         self.task = {'date': None, 'done': False}
 
     def run(self):
+        """Return status and a task dictionary with user's description."""
         result = self.widgets.dialog.run()
         self.task['text'] = self.widgets.entry_text.get_text()
         active = self.widgets.combobox_interval.get_active()
@@ -78,7 +83,14 @@ class DialogAdd:
             self.widgets.spinbutton_days.set_sensitive(False)
 
     def on_entry_date_icon_press(self, entry, position, event):
+        """Show dialog with calendar and set date key of the task dict,
+        when the icon in the entry is clicked.
+        
+        Also update some widgets' attributes.
+        """
         if position == Gtk.EntryIconPosition.PRIMARY:
+            # calendar icon clicked
+            # define default date to show
             _date = self.task['date'] if self.task['date'] else \
                     datetime.date.today()
             dialog_calendar = DialogCalendar(_date)
@@ -89,6 +101,7 @@ class DialogAdd:
                 # set combobox sensitive
                 self.widgets.combobox_interval.set_sensitive(True)
         else:
+            # clear icon clicked
             self.task['date'] = None
             self.widgets.entry_date.set_text('')
             # set combobox not sensitive
@@ -98,6 +111,7 @@ class DialogAdd:
 
 
 class DialogDelete:
+    """A simple dialog with two buttons handling deleting a task."""
 
     def __init__(self):
         builder = Gtk.Builder()
@@ -111,6 +125,7 @@ class DialogDelete:
 
 
 class DialogEdit(DialogAdd):
+    """The same as DialogAdd but fills widgets."""
     
     def __init__(self, task):
         super(DialogEdit, self).__init__()
@@ -118,6 +133,7 @@ class DialogEdit(DialogAdd):
         self.set_values()
 
     def set_values(self):
+        """Fill proper widgets with task's values."""
         self.widgets.entry_text.set_text(self.task['text'])
         if self.task['date']:
             self.widgets.entry_date.set_text(self.task['date'].strftime(
@@ -141,6 +157,7 @@ class DialogEdit(DialogAdd):
 
 
 class TaskListGUI:
+    """Main class of the program."""
 
     def __init__(self):
         builder = Gtk.Builder()
@@ -152,12 +169,14 @@ class TaskListGUI:
 
         self.parser = parser.TaskParser(cons.DATA_FILE)
 
+        # make done tasks strikethrough
         self.set_column_func()
+        # add tasks to the liststore object
         self.update_liststore()
 
     def set_column_func(self):
         """Add a function to treeview columns controlling strikethrough
-        property depending on status of the task.
+        property depending on status 'done' of the task.
         """
         def make_strikethrough(column, cell, model, it, data):
             if model.get_value(it, cons.COLUMN_DONE):
@@ -178,7 +197,7 @@ class TaskListGUI:
         )
 
     def update_liststore(self):
-        """Clear and add tasks to liststore object."""
+        """Clear and add tasks to the liststore object."""
         # count of tasks
         self._index = 0
         self.widgets.liststore.clear()
@@ -192,6 +211,7 @@ class TaskListGUI:
         return ''
 
     def _get_interval(self, interval):
+        # FIXME: needs translating
         if interval == cons.MONTH:
             return 'miesiąc'
         elif interval == cons.YEAR:
@@ -263,6 +283,7 @@ class TaskListGUI:
         self.parser.edit_task(index, done=not value)
 
     def on_toolbutton_down_clicked(self, button):
+        # TODO: add drag and drop
         model, it = self.widgets.treeview_selection.get_selected()
         if not it:
             return
@@ -277,6 +298,7 @@ class TaskListGUI:
         self.parser.swap_task(index_a, index_b)
 
     def on_toolbutton_up_clicked(self, button):
+        # TODO: add drag and drop
         return
         model, it = self.widgets.treeview_selection.get_selected()
         if not it:
