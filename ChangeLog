@@ -1,3 +1,7 @@
+15/9/11
+	- cli client extended (options to not show numbers and sort tasks)
+	- more docstrings
+
 13/9/11
 	- check types of task's attributes
 	- combobox not sensitive when interval is not set
