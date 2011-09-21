@@ -1,6 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkMenu" id="context_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkImageMenuItem" id="context_menuitem_add">
+        <property name="label">gtk-add</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
+        <property name="use_underline">True</property>
+        <property name="use_stock">True</property>
+        <signal name="activate" handler="on_context_menuitem_add_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImageMenuItem" id="context_menuitem_edit">
+        <property name="label">gtk-edit</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
+        <property name="use_underline">True</property>
+        <property name="use_stock">True</property>
+        <signal name="activate" handler="on_context_menuitem_edit_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImageMenuItem" id="context_menuitem_delete">
+        <property name="label">gtk-delete</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
+        <property name="use_underline">True</property>
+        <property name="use_stock">True</property>
+        <signal name="activate" handler="on_context_menuitem_delete_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="context_menuitem_done">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
+        <property name="label" translatable="yes">Wykonane</property>
+        <signal name="activate" handler="on_context_menuitem_done_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkListStore" id="liststore">
     <columns>
       <!-- column-name id -->
@@ -14,47 +60,6 @@
       <!-- column-name text -->
       <column type="gchararray"/>
     </columns>
-  </object>
-  <object class="GtkMenu" id="menu">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <child>
-      <object class="GtkImageMenuItem" id="menuitem_add">
-        <property name="label">gtk-add</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
-        <property name="use_underline">True</property>
-        <property name="use_stock">True</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImageMenuItem" id="menuitem_edit1">
-        <property name="label">gtk-edit</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
-        <property name="use_underline">True</property>
-        <property name="use_stock">True</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImageMenuItem" id="menuitem_delete">
-        <property name="label">gtk-delete</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
-        <property name="use_underline">True</property>
-        <property name="use_stock">True</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="menuitem_done">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
-      </object>
-    </child>
   </object>
   <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>

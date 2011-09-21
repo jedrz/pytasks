@@ -172,7 +172,7 @@ class TaskListGUI:
         # make done tasks strikethrough
         self.set_column_func()
         # add tasks to the liststore object
-        self.update_liststore()
+        self.liststore_update()
 
     def set_column_func(self):
         """Add a function to treeview columns controlling strikethrough
@@ -196,14 +196,14 @@ class TaskListGUI:
                 make_strikethrough
         )
 
-    def update_liststore(self):
+    def liststore_update(self):
         """Clear and add tasks to the liststore object."""
         # count of tasks
         self._index = 0
         self.widgets.liststore.clear()
         tasks = self.parser.get_tasks()
         for task in tasks:
-            self.add_task_liststore(task)
+            self.liststore_add_task(task)
 
     def _get_date(self, date):
         if date:
@@ -220,7 +220,7 @@ class TaskListGUI:
             return '{} dni'.format(interval)
         return ''
 
-    def add_task_liststore(self, task):
+    def liststore_add_task(self, task):
         self.widgets.liststore.append([
             self._index,
             task['done'],
@@ -230,48 +230,27 @@ class TaskListGUI:
         ])
         self._index += 1
 
-    def edit_task_liststore(self, it, task):
+    def liststore_edit_task(self, it, task):
         self.widgets.liststore.set_value(it,
                 cons.COLUMN_DATE, self._get_date(task['date']))
         self.widgets.liststore.set_value(it,
                 cons.COLUMN_INTERVAL, self._get_interval(task['interval']))
         self.widgets.liststore.set_value(it, cons.COLUMN_TEXT, task['text'])
 
-    def menu_show_all(self, button, timestamp):
-        self.widgets.menu.popup(None, None, None, None, button, timestamp)
-
-    def menu_show_add(self, button, timestamp):
-        # consider sensitive instead
-        prefix = 'menuitem_'
-        not_visible = ('edit', 'delete', 'done')
-        for e in not_visible:
-            getattr(self.widgets, prefix + e).set_visible(False)
-        self.widgets.menu.popup(None, None, None, None, button, timestamp)
-
-    def on_window_destroy(self, window):
-        Gtk.main_quit()
-
-    def on_toolbutton_add_clicked(self, button):
+    def add_task(self):
+        """Add a task to the liststore object and save to the file.
+        
+        The method is using a dialog to get some values.
+        """
         dialog_add = DialogAdd()
         result, task = dialog_add.run()
         if result != Gtk.ResponseType.OK:
             return
-        self.add_task_liststore(task)
+        self.liststore_add_task(task)
         self.parser.add_task(**task)
 
-    def on_toolbutton_delete_clicked(self, button):
-        model, it = self.widgets.treeview_selection.get_selected()
-        if not it:
-            return
-        dialog_delete = DialogDelete()
-        result = dialog_delete.run()
-        if result != Gtk.ResponseType.OK:
-            return
-        index = model.get_value(it, cons.COLUMN_ID)
-        self.parser.delete_task(index)
-        self.update_liststore()
-
-    def on_toolbutton_edit_clicked(self, button):
+    def edit_task(self):
+        """Edit a selected task, similar to add_task."""
         model, it = self.widgets.treeview_selection.get_selected()
         if not it:
             return
@@ -281,10 +260,24 @@ class TaskListGUI:
         result, task = dialog_edit.run()
         if result != Gtk.ResponseType.OK:
             return
-        self.edit_task_liststore(it, task)
+        self.liststore_edit_task(it, task)
         self.parser.edit_task(index, **task)
 
-    def on_toolbutton_done_clicked(self, button):
+    def delete_task(self):
+        """Delete a selected task confirmed by user using dialog."""
+        model, it = self.widgets.treeview_selection.get_selected()
+        if not it:
+            return
+        dialog_delete = DialogDelete()
+        result = dialog_delete.run()
+        if result != Gtk.ResponseType.OK:
+            return
+        index = model.get_value(it, cons.COLUMN_ID)
+        self.parser.delete_task(index)
+        self.liststore_update()
+
+    def toggle_task(self):
+        """Make a task done or not done."""
         model, it = self.widgets.treeview_selection.get_selected()
         if not it:
             return
@@ -292,6 +285,38 @@ class TaskListGUI:
         value = model.get_value(it, cons.COLUMN_DONE)
         model.set_value(it, cons.COLUMN_DONE, not value)
         self.parser.edit_task(index, done=not value)
+
+    def _menu_set_sensitive(self, sensitive):
+        prefix = 'context_menuitem_'
+        names = ('edit', 'delete', 'done')
+        for name in names:
+            menuitem = getattr(self.widgets, prefix + name)
+            menuitem.set_sensitive(sensitive)
+
+    def menu_show_all(self, button, timestamp):
+        self._menu_set_sensitive(True)
+        self.widgets.context_menu.popup(None, None, None, None, button,
+                                        timestamp)
+
+    def menu_show_add(self, button, timestamp):
+        self._menu_set_sensitive(False)
+        self.widgets.context_menu.popup(None, None, None, None, button,
+                                        timestamp)
+
+    def on_window_destroy(self, window):
+        Gtk.main_quit()
+
+    def on_toolbutton_add_clicked(self, button):
+        self.add_task()
+
+    def on_toolbutton_edit_clicked(self, button):
+        self.edit_task()
+
+    def on_toolbutton_delete_clicked(self, button):
+        self.delete_task()
+
+    def on_toolbutton_done_clicked(self, button):
+        self.toggle_task()
 
     def on_toolbutton_down_clicked(self, button):
         model, it = self.widgets.treeview_selection.get_selected()
@@ -324,6 +349,18 @@ class TaskListGUI:
         model[index_b][cons.COLUMN_ID] = index_a
         self.parser.swap_task(index_a, index_b)
 
+    def on_context_menuitem_add_activate(self, menuitem):
+        self.add_task()
+
+    def on_context_menuitem_edit_activate(self, menuitem):
+        self.edit_task()
+
+    def on_context_menuitem_delete_activate(self, menuitem):
+        self.delete_task()
+
+    def on_context_menuitem_done_activate(self, menuitem):
+        self.toggle_task()
+
     def on_treeview_event(self, treeview, event):
         # button-press-event not working?
         if event.type == Gdk.EventType.BUTTON_PRESS:
@@ -335,7 +372,7 @@ class TaskListGUI:
                     path = pthinfo[0]
                     self.menu_show_all(event.button.button, event.time)
                 else:
-                    menu.menu_show_add(event.button.button, event.time)
+                    self.menu_show_add(event.button.button, event.time)
 
 
 def main():
