@@ -287,6 +287,7 @@ class TaskListGUI:
         self.parser.edit_task(index, done=not value)
 
     def _menu_set_sensitive(self, sensitive):
+        """Set sensitive menuitems."""
         prefix = 'context_menuitem_'
         names = ('edit', 'delete', 'done')
         for name in names:
