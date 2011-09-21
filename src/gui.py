@@ -124,6 +124,18 @@ class DialogDelete:
         return result
 
 
+class DialogAbout:
+
+    def __init__(self):
+        builder = Gtk.Builder()
+        builder.add_from_file(cons.DIALOG_ABOUT_SCHEMA)
+        self.widgets = GtkBuilderProxy(builder)
+
+    def run(self):
+        self.widgets.aboutdialog.run()
+        self.widgets.aboutdialog.destroy()
+
+
 class DialogEdit(DialogAdd):
     """The same as DialogAdd but fills widgets."""
     
@@ -373,6 +385,10 @@ class TaskListGUI:
                     self.menu_show_all(event.button.button, event.time)
                 else:
                     self.menu_show_add(event.button.button, event.time)
+
+    def on_menuitem_about_activate(self, menuitem):
+        dialog_about = DialogAbout()
+        dialog_about.run()
 
 
 def main():
