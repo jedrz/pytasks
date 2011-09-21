@@ -89,7 +89,7 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="menuitem_add">
-                        <property name="label">gtk-new</property>
+                        <property name="label">gtk-add</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_action_appearance">False</property>
