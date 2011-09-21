@@ -88,7 +88,7 @@ class TaskParser:
     def check_task(self, **task):
         prefix = 'check_'
         for k, v in task.items():
-            getattr(self, '{}{}'.format(prefix, k))(v)
+            getattr(self, prefix + k)(v)
 
     def add_task(self, text=None, date=None, interval=None, done=False):
         """Add a task and save in the todo file.
