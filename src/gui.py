@@ -208,6 +208,9 @@ class TaskListGUI:
                 make_strikethrough
         )
 
+    def quit(self):
+        Gtk.main_quit()
+
     def liststore_update(self):
         """Clear and add tasks to the liststore object."""
         # count of tasks
@@ -317,7 +320,7 @@ class TaskListGUI:
                                         timestamp)
 
     def on_window_destroy(self, window):
-        Gtk.main_quit()
+        self.quit()
 
     def on_toolbutton_add_clicked(self, button):
         self.add_task()
@@ -385,6 +388,18 @@ class TaskListGUI:
                     self.menu_show_all(event.button.button, event.time)
                 else:
                     self.menu_show_add(event.button.button, event.time)
+
+    def on_menuitem_add_activate(self, menuitem):
+        self.add_task()
+
+    def on_menuitem_edit_activate(self, menuitem):
+        self.edit_task()
+
+    def on_menuitem_delete_activate(self, menuitem):
+        self.delete_task()
+
+    def on_menuitem_quit_activate(self, menuitem):
+        self.quit()
 
     def on_menuitem_about_activate(self, menuitem):
         dialog_about = DialogAbout()
