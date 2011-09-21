@@ -369,7 +369,6 @@ class TaskListGUI:
                 pthinfo = treeview.get_path_at_pos(event.x, event.y)
                 # clicked on a row?
                 if pthinfo:
-                    path = pthinfo[0]
                     self.menu_show_all(event.button.button, event.time)
                 else:
                     self.menu_show_add(event.button.button, event.time)
