@@ -5,7 +5,7 @@
 import sys
 import datetime
 
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 
 import parser
 import cons
@@ -156,6 +156,24 @@ class DialogEdit(DialogAdd):
                     cons.COMBOBOX_INTERVAL_NONE)
 
 
+class PopupMenu:
+
+    def __init__(self):
+        builder = Gtk.Builder()
+        builder.add_from_file(cons.POPUP_MENU_SCHEMA)
+        self.menu = GtkBuilderProxy(builder)
+
+    def show_all(self, button, timestamp):
+        self.widgets.menu.popup(None, None, None, None, button, timestamp)
+
+    def show_add(self, button, timestamp):
+        prefix = 'menuitem_'
+        not_visible = ('edit', 'delete', 'done')
+        for e in not_visible:
+            getattr(self.widgets, prefix + e).set_visible(False)
+        self.widgets.menu.popup(None, None, None, None, button, timestamp)
+
+
 class TaskListGUI:
     """Main class of the program."""
 
@@ -237,6 +255,17 @@ class TaskListGUI:
                 cons.COLUMN_INTERVAL, self._get_interval(task['interval']))
         self.widgets.liststore.set_value(it, cons.COLUMN_TEXT, task['text'])
 
+    def menu_show_all(self, button, timestamp):
+        self.widgets.menu.popup(None, None, None, None, button, timestamp)
+
+    def menu_show_add(self, button, timestamp):
+        # consider sensitive instead
+        prefix = 'menuitem_'
+        not_visible = ('edit', 'delete', 'done')
+        for e in not_visible:
+            getattr(self.widgets, prefix + e).set_visible(False)
+        self.widgets.menu.popup(None, None, None, None, button, timestamp)
+
     def on_window_destroy(self, window):
         Gtk.main_quit()
 
@@ -282,8 +311,20 @@ class TaskListGUI:
         model.set_value(it, cons.COLUMN_DONE, not value)
         self.parser.edit_task(index, done=not value)
 
+    def on_treeview_event(self, treeview, event):
+        # button-press-event not working?
+        if event.type == Gdk.EventType.BUTTON_PRESS:
+            # right button clicked
+            if event.button.button == 3:
+                pthinfo = treeview.get_path_at_pos(event.x, event.y)
+                # clicked on a row?
+                if pthinfo:
+                    path = pthinfo[0]
+                    self.menu_show_all(event.button.button, event.time)
+                else:
+                    menu.menu_show_add(event.button.button, event.time)
+
     def on_toolbutton_down_clicked(self, button):
-        # TODO: add drag and drop
         model, it = self.widgets.treeview_selection.get_selected()
         if not it:
             return
@@ -298,12 +339,11 @@ class TaskListGUI:
         self.parser.swap_task(index_a, index_b)
 
     def on_toolbutton_up_clicked(self, button):
-        # TODO: add drag and drop
+        # FIXME doesn't work
         return
         model, it = self.widgets.treeview_selection.get_selected()
         if not it:
             return
-        # FIXME doesn't work
         index_a = model.get_value(it, cons.COLUMN_ID)
         index_b = -1
         if index_a == 0:
