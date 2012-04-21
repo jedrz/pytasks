@@ -55,6 +55,7 @@ class TaskParser:
                     tasks[i]['date'] = task['date'].strftime(cons.DATE_FORMAT)
             json.dump(tasks, f)
 
+    # FIXME checking types sucks
     def _check_type(self, obj, types, compare_func=isinstance):
         if obj is None:
             return True
