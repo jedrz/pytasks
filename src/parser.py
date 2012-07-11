@@ -30,9 +30,12 @@ class TaskParser:
 
         If file is empty return an empty list.
         """
-        try:
-            with open(self.tasks_path) as f:
+        with open(self.tasks_path) as f:
+            try:
                 tasks = json.load(f)
+            except ValueError:
+                return []
+            else:
                 for i, task in enumerate(tasks):
                     if not task['date']:
                         continue
@@ -41,8 +44,6 @@ class TaskParser:
                     date = datetime.date(date.year, date.month, date.day)
                     tasks[i]['date'] = date
                 return tasks
-        except ValueError:
-            return []
 
     def save_tasks(self, tasks):
         """Save tasks in the file.
@@ -52,44 +53,10 @@ class TaskParser:
         with open(self.tasks_path, 'w') as f:
             for i, task in enumerate(tasks):
                 if task['date']:
+                    # convert date from datetime.date object
+                    # to a formatted string
                     tasks[i]['date'] = task['date'].strftime(cons.DATE_FORMAT)
             json.dump(tasks, f)
-
-    # FIXME checking types sucks
-    def _check_type(self, obj, types, compare_func=isinstance):
-        if obj is None:
-            return True
-        for t in types:
-            if compare_func(obj, t):
-                return True
-        return False
-
-    def check_text(self, text):
-        result = self._check_type(text, cons.TEXT_TYPES)
-        if not result:
-            raise TypeError('invalid type of \'text\'')
-
-    def check_date(self, date):
-        result = self._check_type(date, cons.DATE_TYPES)
-        if not result:
-            raise TypeError('invalid type of \'date\'')
-
-    def check_interval(self, interval):
-        result_value = self._check_type(interval, cons.INTERVAL_VALUES,
-                                        operator.eq)
-        result_type = self._check_type(interval, cons.INTERVAL_TYPES)
-        if not (result_value or result_type):
-            raise TypeError('invalid type of \'interval\'')
-
-    def check_done(self, done):
-        result = self._check_type(done, cons.DONE_TYPES, operator.eq)
-        if not result:
-            raise TypeError('invalid type of \'done\'')
-
-    def check_task(self, **task):
-        prefix = 'check_'
-        for k, v in task.items():
-            getattr(self, prefix + k)(v)
 
     def add_task(self, text=None, date=None, interval=None, done=False):
         """Add a task and save in the todo file.
@@ -97,10 +64,9 @@ class TaskParser:
         arguments:
         text -- description of the task
         date -- datetime.date object
-        interval -- possible values: number of days, cons.MONTH or cons.YEAR
-        done -- status of the task (default False)
+        interval -- possible values: number of days, 'month' or 'year'
+        done -- status of the task (by default False)
         """
-        self.check_task(text=text, date=date, interval=interval, done=done)
         tasks = self.get_tasks()
         tasks.append({
             'text': text,
@@ -120,12 +86,6 @@ class TaskParser:
         """Edit a task pointed by the index.
         Similar to add_task method.
         """
-        self.check_task(
-                text=task.get('text'),
-                date=task.get('date'),
-                interval=task.get('interval'),
-                done=task.get('done')
-        )
         tasks = self.get_tasks()
         # dirty solution
         if task.get('text', -1) != -1:
@@ -156,9 +116,9 @@ class TaskParser:
             date = task['date']
             interval = task['interval']
             while (datetime.date.today() - date).days > 0:
-                if isinstance(interval, cons.DAYS):
+                if isinstance(interval, int):
                     date += datetime.timedelta(days=interval)
-                elif interval == cons.MONTH:
+                elif interval == 'month':
                     if date.month == 12:
                         date = date.replace(year=date.year + 1, month=1)
                     else:
@@ -172,7 +132,7 @@ class TaskParser:
                                 day -= 1
                             else:
                                 break
-                elif interval == cons.YEAR:
+                elif interval == 'year':
                     date = date.replace(year=date.year + 1)
                 tasks[i]['date'] = date
         self.save_tasks(tasks)
@@ -186,6 +146,6 @@ if __name__ == '__main__':
     parser.add_task('two two')
     parser.add_task('three three three')
     parser.edit_task(2, text='four x 4',date=datetime.date.today(),
-                     interval=cons.MONTH)
+                     interval='month')
     parser.delete_task(0)
     print(parser.get_tasks())

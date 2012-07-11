@@ -42,7 +42,7 @@ class TaskListCLI(parser.TaskParser):
 
     def list_tasks(self, comp=True, incomp=True, status=True, number=True,
                    sort=False):
-        """Return a formatted string.
+        """Return a formatted string with proper tasks.
 
         arguments:
         comp -- show completed tasks
@@ -51,8 +51,8 @@ class TaskListCLI(parser.TaskParser):
         number -- show numbered tasks
         sort -- show sorted tasks by date
 
-        Default the method returns formatted string with numbered all tasks
-        and showed status.
+        By default the method returns formatted string with numbered all tasks
+        and their status.
         """
         def filter_task(date, done):
             passed = False

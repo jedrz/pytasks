@@ -35,16 +35,6 @@ create_conf()
 
 DATE_FORMAT = '%d.%m.%y'
 
-MONTH = 'month'
-YEAR = 'year'
-DAYS = int
-
-TEXT_TYPES = (str, )
-DATE_TYPES = (datetime.date, )
-INTERVAL_VALUES = (MONTH, YEAR)
-INTERVAL_TYPES = (int, )
-DONE_TYPES = (True, False)
-
 COLUMN_ID = 0
 COLUMN_DONE = 1
 COLUMN_DATE = 2
