@@ -34,6 +34,8 @@ def create_conf():
 create_conf()
 
 DATE_FORMAT = '%d.%m.%y'
+MONTH = 'month'
+YEAR = 'year'
 
 COLUMN_ID = 0
 COLUMN_DONE = 1

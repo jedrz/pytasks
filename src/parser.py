@@ -64,7 +64,8 @@ class TaskParser:
         arguments:
         text -- description of the task
         date -- datetime.date object
-        interval -- possible values: number of days, 'month' or 'year'
+        interval -- possible values: number of days, 'month' (cons.MONTH)
+            or 'year' (cons.YEAR)
         done -- status of the task (by default False)
         """
         tasks = self.get_tasks()
@@ -94,7 +95,7 @@ class TaskParser:
             tasks[index]['date'] = task['date']
         if task.get('interval', -1) != -1:
             tasks[index]['interval'] = task['interval']
-        if task.get('done') in cons.DONE_TYPES:
+        if task.get('done') in (False, True):
             tasks[index]['done'] = task['done']
         self.save_tasks(tasks)
 
@@ -118,7 +119,7 @@ class TaskParser:
             while (datetime.date.today() - date).days > 0:
                 if isinstance(interval, int):
                     date += datetime.timedelta(days=interval)
-                elif interval == 'month':
+                elif interval == cons.MONTH:
                     if date.month == 12:
                         date = date.replace(year=date.year + 1, month=1)
                     else:
@@ -132,7 +133,7 @@ class TaskParser:
                                 day -= 1
                             else:
                                 break
-                elif interval == 'year':
+                elif interval == cons.YEAR:
                     date = date.replace(year=date.year + 1)
                 tasks[i]['date'] = date
         self.save_tasks(tasks)
