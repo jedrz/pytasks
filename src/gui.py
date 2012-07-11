@@ -159,7 +159,7 @@ class DialogEdit(DialogAdd):
         elif interval == cons.YEAR:
             self.widgets.combobox_interval.set_active(
                     cons.COMBOBOX_INTERVAL_YEAR)
-        elif isinstance(interval, cons.DAYS):
+        elif isinstance(interval, int):
             self.widgets.combobox_interval.set_active(
                     cons.COMBOBOX_INTERVAL_DAYS)
             self.widgets.spinbutton_days.set_value(interval)
@@ -231,7 +231,7 @@ class TaskListGUI:
             return 'miesiąc'
         elif interval == cons.YEAR:
             return 'rok'
-        elif isinstance(interval, cons.DAYS):
+        elif isinstance(interval, int):
             return '{} dni'.format(interval)
         return ''
 
