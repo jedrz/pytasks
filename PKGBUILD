@@ -6,7 +6,7 @@ pkgdesc="A todo list with interval option"
 arch=(any)
 url="http://github.com/jedrz/pytasks"
 license=('GPL')
-depends=('py3gobject')
+depends=('python-gobject')
 makedepends=('git')
 md5sums=()
 
